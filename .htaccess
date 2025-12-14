@@ -1,0 +1,40 @@
+# File: /.htaccess
+RewriteEngine On
+
+# Base directory (sesuaikan dengan lokasi project)
+RewriteBase /ksc/
+
+# Remove index.php from URL
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?/$1 [L,QSA]
+
+# Protect sensitive directories
+RewriteRule ^(includes|cron)/ - [F,L]
+
+# Custom error pages
+ErrorDocument 404 /ksc/404.php
+ErrorDocument 403 /ksc/403.php
+ErrorDocument 500 /ksc/500.php
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Disable directory browsing
+Options -Indexes
+
+# Protect .htaccess file
+<Files .htaccess>
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Protect config files
+<FilesMatch "^(config|database|auth|functions)\.php$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
